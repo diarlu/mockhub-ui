@@ -1,0 +1,24 @@
+# Runs the MockHub server and this UI together. Start with:  docker compose up --build
+# UI:    http://localhost:8080
+# Mocks: http://localhost:8083/...  (also reachable through the UI at http://localhost:8080/api/...)
+services:
+  mockhub:
+    build: ../mockhub
+    ports:
+      - "8083:8083"
+    volumes:
+      - mockhub-mocks:/app/mocks
+
+  mockhub-ui:
+    build: .
+    environment:
+      MOCKHUB_SERVER: mockhub:8083
+    ports:
+      - "8080:80"
+    depends_on:
+      - mockhub
+
+volumes:
+  mockhub-mocks:
+    # Same volume name as in the MockHub README, so existing mocks are reused.
+    name: mockhub-mocks
